@@ -3,6 +3,8 @@ package fortyrunner;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -14,9 +16,6 @@ import java.util.OptionalDouble;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -26,7 +25,7 @@ public class App {
 
   private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-  public static Function<String, HouseInfo> mapToHousePrice = (line) -> {
+  public static Function<String, HouseInfo> mapToHouseInfo = (line) -> {
     String[] values = line.split(",");
     return new HouseInfo(values[0], values[1], values[2]);
   };
@@ -37,7 +36,7 @@ public class App {
 
   public static void main(String[] args) throws IOException {
     App app = new App();
-    app.readPrices("Average_Prices_SA.csv");
+    app.readHouseInfo("Average_Prices_SA.csv");
 
     app.fileStats();
 
@@ -82,17 +81,25 @@ public class App {
   }
 
   private double applyBenfordsLaw(final int digit, final int year) {
-    String start = Integer.toString(digit);
-    List<HouseInfo> filtered = collect.stream().filter(e -> e.getYear() == year).collect(Collectors.toList());
+    List<HouseInfo> filtered = filterByYear(year);
     long total = filtered.size();
 
-    long ones = filtered
+    long ones = filterByStartingDigit(digit, filtered);
+
+    return (ones * 100 / total);
+  }
+
+  private long filterByStartingDigit(final int digit, final List<HouseInfo> filtered) {
+    String start = Integer.toString(digit);
+    return filtered
       .stream()
       .parallel()
       .filter(e -> Double.toString(e.getPrice()).startsWith(start))
       .count();
+  }
 
-    return (ones * 100 / total);
+  private List<HouseInfo> filterByYear(final int year) {
+    return collect.stream().filter(e -> e.getYear() == year).collect(Collectors.toList());
   }
 
   private void average() {
@@ -120,11 +127,15 @@ public class App {
 
   }
 
-  private void readPrices(final String filename) throws IOException {
+  /**
+   * Read the CSV file into a collection and convert to a collection of HouseInfo objects.
+   * Remember to skip the header line
+   */
+  private void readHouseInfo(final String filename) throws IOException {
 
     this.lines = Files.readAllLines(Paths.get(filename), StandardCharsets.UTF_8);
 
-    this.collect = lines.stream().skip(1).map(mapToHousePrice).collect(toList());
+    this.collect = lines.stream().skip(1).map(mapToHouseInfo).collect(toList());
 
   }
 
