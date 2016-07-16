@@ -1,13 +1,15 @@
 package fortyrunner;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public final class HouseInfo {
-  private String name;
 
-  private LocalDate date;
+  private final String name;
 
-  private Double price;
+  private final LocalDate date;
+
+  private final Double price;
 
   public HouseInfo(final String date, final String name, final String averagePrice) {
     this.date = LocalDate.parse(date);
@@ -37,25 +39,20 @@ public final class HouseInfo {
   }
 
   @Override
-  public boolean equals(final Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     HouseInfo houseInfo = (HouseInfo) o;
-
-    if (!date.equals(houseInfo.date)) return false;
-    if (!name.equals(houseInfo.name)) return false;
-    if (price != null ? !price.equals(houseInfo.price) : houseInfo.price != null) return false;
-
-    return true;
+    return Objects.equals(name, houseInfo.name) &&
+      Objects.equals(date, houseInfo.date);
   }
 
   @Override
   public int hashCode() {
-    int result = name.hashCode();
-    result = 31 * result + date.hashCode();
-    return result;
+    return Objects.hash(name, date);
   }
-
-
 }

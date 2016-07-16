@@ -25,7 +25,7 @@ public class App {
 
   private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-  public static Function<String, HouseInfo> mapToHouseInfo = (line) -> {
+  private static final Function<String, HouseInfo> mapToHouseInfo = (line) -> {
     String[] values = line.split(",");
     return new HouseInfo(values[0], values[1], values[2]);
   };
@@ -52,6 +52,8 @@ public class App {
   }
 
   private static void printTable(final Table<Integer, Integer, Double> table) {
+    logger.info("Benfords law predicts that most numbers begin with a 1 in sets of naturally occurring numbers\n");
+    logger.info("Year,1%,2%,3%,4%,5%,6%,7%,8%,9%");
     for (Integer row : table.rowKeySet()) {
       Map<Integer, Double> columns = table.row(row);
       logger.info(Joiner.on(',').join(row, columns.values()));
