@@ -25,7 +25,7 @@ public class App {
 
   private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-  private static final Function<String, HouseInfo> mapToHouseInfo = (line) -> {
+  private static final Function<String, HouseInfo> mapToHouseInfo = line -> {
     String[] values = line.split(",");
     return new HouseInfo(values[0], values[1], values[2]);
   };
@@ -121,11 +121,11 @@ public class App {
 
   private void fileStats() {
     long count = lines.stream().count();
-    logger.info(String.format("File is %d lines long", count));
+    logger.info("File is {} lines long", count);
 
-    logger.info("header=" + lines.stream().findFirst());
+    logger.info("header={}", lines.stream().findFirst());
 
-    logger.info("Sample Record=" + lines.stream().skip(1).findAny());
+    logger.info("Sample Record={}", lines.stream().skip(1).findAny());
 
   }
 
